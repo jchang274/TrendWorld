@@ -1,0 +1,2 @@
+# TrendWorld
+Learn Trading
