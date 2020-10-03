@@ -1,0 +1,246 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// ? jchang274
+//@version=4
+study("Sub",overlay=false)
+options =input(defval = "SPXMB",title='Options',type=input.string,options=["SPXMB","SPXMBL","BIAS","Price Deduction","Waiting…"])
+
+// ###### SPXMB with color Red and Green #####
+//Draw referance Line
+r0  = hline(options == "SPXMB"?  0 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r1  = hline(options == "SPXMB"? 10 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r2  = hline(options == "SPXMB"? 20 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r3  = hline(options == "SPXMB"? 30 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r4  = hline(options == "SPXMB"? 40 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r5  = hline(options == "SPXMB"? 50 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r6  = hline(options == "SPXMB"? 60 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r7  = hline(options == "SPXMB"? 70 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r8  = hline(options == "SPXMB"? 80 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r9  = hline(options == "SPXMB"? 90 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r10 = hline(options == "SPXMB"?100 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r11 = hline(options == "SPXMB"?110 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r12 = hline(options == "SPXMB"?120 : na,linestyle=hline.style_dashed, color=color.silver,editable=0)
+r13 = hline(options == "SPXMB"?130 : na,linestyle=hline.style_dashed, color=color.new(color.white,100),editable=0)
+//Make a function which can fill color with red and green sperated by transparency
+tp =9
+colorFill(v) =>
+      v>=95?color.new(color.green,tp*0):
+      v>=90?color.new(color.green,tp*1):
+      v>=85?color.new(color.green,tp*2):
+      v>=80?color.new(color.green,tp*3):
+      v>=75?color.new(color.green,tp*4):
+      v>=70?color.new(color.green,tp*5):
+      v>=65?color.new(color.green,tp*6):
+      v>=60?color.new(color.green,tp*7):
+      v>=55?color.new(color.green,tp*8):
+      v>=50?color.new(color.green,tp*9):
+      v>=45?color.new(color.red,tp*9):
+      v>=40?color.new(color.red,tp*8):
+      v>=35?color.new(color.red,tp*7):
+      v>=30?color.new(color.red,tp*6):
+      v>=25?color.new(color.red,tp*5):
+      v>=20?color.new(color.red,tp*4):
+      v>=15?color.new(color.red,tp*3):
+      v>=10?color.new(color.red,tp*2):
+      v>=5?color.new(color.red,tp*1):
+      color.new(color.red,tp*0)
+//Get Above 20 Days MA Index
+COM = security("INDEX:SLTW", "1D",close)
+CND = security("INDEX:SYTW", "1D",close)
+CNS = security("INDEX:SPTW", "1D",close)
+ENE = security("INDEX:SETW", "1D",close)
+FIN = security("INDEX:SFTW", "1D",close)
+HLT = security("INDEX:SVTW", "1D",close)
+IND = security("INDEX:SITW", "1D",close)
+MAT = security("INDEX:SBTW", "1D",close)
+REI = security("INDEX:SSTW", "1D",close)
+TEC = security("INDEX:SKTW", "1D",close)
+UTL = security("INDEX:SUTW", "1D",close)
+TTL=(COM+CND+CNS+ENE+FIN+HLT+IND+MAT+REI+TEC+UTL)/11
+//Use fill fuction to fill whole area.
+fill(r12,r11,colorFill(TTL),editable=false)
+fill(r11,r10,colorFill(COM),editable=false)
+fill(r10,r9 ,colorFill(CND),editable=false)
+fill(r9 ,r8 ,colorFill(CNS),editable=false)
+fill(r8 ,r7 ,colorFill(ENE),editable=false)
+fill(r7 ,r6 ,colorFill(FIN),editable=false)
+fill(r6 ,r5 ,colorFill(HLT),editable=false)
+fill(r5 ,r4 ,colorFill(IND),editable=false)
+fill(r4 ,r3 ,colorFill(MAT),editable=false)
+fill(r3 ,r2 ,colorFill(REI),editable=false)
+fill(r2 ,r1 ,colorFill(TEC),editable=false)
+fill(r1 ,r0 ,colorFill(UTL),editable=false)
+//Draw Lables to display the score
+if options == "SPXMB"
+    GLlabel12=label.new(
+     x=bar_index,y=12*10-5,
+     text="Total Score  "+tostring(TTL*11,"#")+" ("+tostring(TTL,"#")+"%)",
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=TTL>80?color.green:TTL<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)
+    GLlabel11=label.new(
+     x=bar_index,y=11*10-5,
+     text="COM  "+tostring(COM,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=COM>80?color.green:COM<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)
+    GLlabel10=label.new(
+     x=bar_index,y=10*10-5,
+     text="CND  "+tostring(CND,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=CND>80?color.green:CND<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)
+    GLlabel9=label.new(
+     x=bar_index,y=9*10-5,
+     text="CNS  "+tostring(CNS,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=CNS>80?color.green:CNS<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)
+    GLlabel8=label.new(
+     x=bar_index,y=8*10-5,
+     text="ENE  "+tostring(ENE,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=ENE>80?color.green:ENE<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)
+    GLlabel7=label.new(
+     x=bar_index,y=7*10-5,
+     text="FIN  "+tostring(FIN,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=FIN>80?color.green:FIN<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)
+    GLlabel6=label.new(
+     x=bar_index,y=6*10-5,
+     text="HLT  "+tostring(HLT,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=HLT>80?color.green:HLT<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)
+    GLlabel5=label.new(
+     x=bar_index,y=5*10-5,
+     text="IND  "+tostring(IND,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=IND>80?color.green:IND<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)
+    GLlabel4=label.new(
+     x=bar_index,y=4*10-5,
+     text="MAT  "+tostring(MAT,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=MAT>80?color.green:MAT<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)     
+    GLlabel3=label.new(
+     x=bar_index,y=3*10-5,
+     text="REI  "+tostring(REI,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=REI>80?color.green:REI<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)
+    GLlabel2=label.new(
+     x=bar_index,y=2*10-5,
+     text="TEC  "+tostring(TEC,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=TEC>80?color.green:TEC<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)     
+    GLlabel1=label.new(
+     x=bar_index,y=1*10-5,
+     text="UTL  "+tostring(UTL,"#"),
+     style=label.style_label_left,color=color.new(color.white,transp=100),
+     textcolor=UTL>80?color.green:UTL<20?color.red:color.black,
+     textalign = text.align_center,
+     size=size.normal)     
+    label.delete(GLlabel12[1])
+    label.delete(GLlabel11[1])
+    label.delete(GLlabel10[1])
+    label.delete(GLlabel9[1])
+    label.delete(GLlabel8[1])
+    label.delete(GLlabel7[1])
+    label.delete(GLlabel6[1])
+    label.delete(GLlabel5[1])
+    label.delete(GLlabel4[1])
+    label.delete(GLlabel3[1])
+    label.delete(GLlabel2[1])
+    label.delete(GLlabel1[1])
+
+
+// ##### SPXMBL Market Breadth Draw Line #####
+//Sperate the Inidcator into 4 areas,above 80%,below 20%,50~80%,20~50%;h11 provides a blank area.
+h11 = hline(options == "SPXMBL"? 110 : na, linestyle=hline.style_dashed, color=color.new(color.white,100),editable=0)
+h10 = hline(options == "SPXMBL"? 100 : na, linestyle=hline.style_dashed, color=color.lime,editable=0)
+h8  = hline(options == "SPXMBL"?  80 : na, linestyle=hline.style_dashed, color=color.lime,editable=0)
+h5  = hline(options == "SPXMBL"?  50 : na, linestyle=hline.style_dashed, color=color.gray,editable=0)
+h2  = hline(options == "SPXMBL"?  20 : na, linestyle=hline.style_dashed, color=color.red,editable=0)
+h0  = hline(options == "SPXMBL"?   0 : na, linestyle=hline.style_dashed, color=color.red,editable=0)
+//Fill Top and Bottom Area with Color Green and Red
+fill(h0,h2 ,color.red,editable=false)
+fill(h8,h10,color.green,editable=false)
+//Draw 12 Lines
+plot(options == "SPXMBL"?security("INDEX:SLTW", "1D", close) : na,title = "COM ",color=color.purple)
+plot(options == "SPXMBL"?security("INDEX:SYTW", "1D", close) : na,title = "CND ",color=color.red)
+plot(options == "SPXMBL"?security("INDEX:SPTW", "1D", close) : na,title = "CNS ",color=color.orange)
+plot(options == "SPXMBL"?security("INDEX:SETW", "1D", close) : na,title = "ENE ",color=color.yellow)
+plot(options == "SPXMBL"?security("INDEX:SFTW", "1D", close) : na,title = "FIN ",color=color.lime)
+plot(options == "SPXMBL"?security("INDEX:SVTW", "1D", close) : na,title = "HLT ",color=color.green)
+plot(options == "SPXMBL"?security("INDEX:SITW", "1D", close) : na,title = "IND ",color=color.aqua)
+plot(options == "SPXMBL"?security("INDEX:SBTW", "1D", close) : na,title = "MAT ",color=color.blue)
+plot(options == "SPXMBL"?security("INDEX:SSTW", "1D", close) : na,title = "REI ",color=color.fuchsia)
+plot(options == "SPXMBL"?security("INDEX:SKTW", "1D", close) : na,title = "TEC ",color=color.navy)
+plot(options == "SPXMBL"?security("INDEX:SUTW", "1D", close) : na,title = "UTL ",color=color.olive)
+plot(options == "SPXMBL"?security("INDEX:S5TW", "1D", close) : na,title = "SP500 ",color=color.black,linewidth=3)
+
+
+//##### BIAS #####
+cs=(close-ema(close,20))/ema(close,20)*100
+sm=(ema(close,20)-ema(close,60))/ema(close,60)*100
+ml=(ema(close,60)-ema(close,120))/ema(close,120)*100
+//Pine Scritp Rule：the last plot is on the top，the fist plot is on the bottom.
+hline(options == "BIAS"? 0: na,color=color.silver,linestyle=hline.style_dashed,linewidth=2,editable=0)
+plot(options == "BIAS"? ml: na,color=color.new(color.blue,60),style=plot.style_area,editable=0)
+plot(options == "BIAS"? sm: na,color=color.red,editable=0)
+plot(options == "BIAS"? cs: na,color=color.black,editable=0)
+if options == "BIAS"
+    BIlabel=label.new(
+     x=bar_index,
+     y=0,
+     text="乖离率\n\n  ",
+     style=label.style_label_left,
+     color=color.new(color.yellow,transp=100),
+     textcolor=color.new(color.silver,transp=30),
+     size=size.large)
+    label.delete(BIlabel[1])
+
+
+//##### Price Deduction #####
+hline(options == "Price Deduction"? 0: na,color=color.silver,linestyle=hline.style_dashed,linewidth=2,editable=0)
+plot(options == "Price Deduction"?close[120]-close:na,style=plot.style_area,color = color.blue,transp=50,editable=0)
+plot(options == "Price Deduction"?close[60]-close:na,color = color.red,transp=30,style=plot.style_columns,editable=0)
+plot(options == "Price Deduction"?close[20]-close:na,color = color.black,editable=0)
+if options == "Price Deduction"
+    PDlabel=label.new(
+     x=bar_index,
+     y=0,
+     text="抵扣价对比\n\n  ",
+     style=label.style_label_left,
+     color=color.new(color.yellow,transp=100),
+     textcolor=color.new(color.silver,transp=30),
+     size=size.large)
+    label.delete(PDlabel[1])
+
+//##### Waiting... #####
+if options == "Waiting…"
+    WTlabel=label.new(
+     x=bar_index[150],
+     y=0,
+     text="\n==(\\__/) ||\n==(???) ||\n==/ 　 づ   敬请期待，反正也没有了",
+     style=label.style_label_left,
+     color=color.new(color.yellow,transp=100),
+     textcolor=color.new(color.silver,transp=30),
+     textalign=text.align_left,
+     size=size.large)
+    label.delete(WTlabel[1])
