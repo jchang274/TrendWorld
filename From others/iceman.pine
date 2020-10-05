@@ -1,0 +1,50 @@
+study("Sub",overlay=false)
+options =input(defval = "SPXMBL2",title='Options',type=input.string,options=["SPXMB","SPXMBL","SPXMBL2","SPXMBL-NDX","SPXMBL-SPX","Price Divergence","Price Deduction"])
+Ö®ºóÌí¼Ó
+// # SPXMBL Market Breadth Draw Line of 4 market index
+//Sperate the Inidcator into 4 areas,above 80%,below 20%,50~80%,20~50%;h11 provides a blank area.
+h21 = hline(options == "SPXMBL2"? 110 : na, linestyle=hline.style_dashed, color=color.new(color.white,100),editable=0)
+h22 = hline(options == "SPXMBL2"? 100 : na, linestyle=hline.style_dashed, color=color.lime,editable=0)
+h23  = hline(options == "SPXMBL2"?  80 : na, linestyle=hline.style_dashed, color=color.lime,editable=0)
+h24  = hline(options == "SPXMBL2"?  50 : na, linestyle=hline.style_dashed, color=color.gray,editable=0)
+h25  = hline(options == "SPXMBL2"?  20 : na, linestyle=hline.style_dashed, color=color.green,editable=0)
+h26  = hline(options == "SPXMBL2"?   0 : na, linestyle=hline.style_dashed, color=color.green,editable=0)
+//Fill Top and Bottom Area with Color Red and Green
+fill(h26,h25 ,color.green,editable=false)
+fill(h22,h23,color.red,editable=false)
+plot(options == "SPXMBL2"?security("INDEX:S5TW", "1D", close) : na,title = "S&P500' 20days",color=color.white,linewidth=2)
+plot(options == "SPXMBL2"?security("INDEX:NDTW", "1D", close) : na,title = "NASDAQ100' 20DAYS ",color=color.aqua,linewidth=2)
+plot(options == "SPXMBL2"?security("INDEX:DITW", "1D", close) : na,title = "DOWJONES30' 20DAYS ",color=color.yellow,linewidth=2)
+plot(options == "SPXMBL2"?security("INDEX:R2TW", "1D", close) : na,title = "RUSSELL2000' 20DAYS",color=color.lime,linewidth=2)
+// # SPXMBL Market Breadth Draw Line of NASDAQ multi days index
+//Sperate the Inidcator into 4 areas,above 80%,below 20%,50~80%,20~50%;h11 provides a blank area.
+h31 = hline(options == "SPXMBL-NDX"? 110 : na, linestyle=hline.style_dashed, color=color.new(color.white,100),editable=0)
+h32 = hline(options == "SPXMBL-NDX"? 100 : na, linestyle=hline.style_dashed, color=color.lime,editable=0)
+h33  = hline(options == "SPXMBL-NDX"?  80 : na, linestyle=hline.style_dashed, color=color.lime,editable=0)
+h34  = hline(options == "SPXMBL-NDX"?  50 : na, linestyle=hline.style_dashed, color=color.gray,editable=0)
+h35  = hline(options == "SPXMBL-NDX"?  20 : na, linestyle=hline.style_dashed, color=color.green,editable=0)
+h36  = hline(options == "SPXMBL-NDX"?   0 : na, linestyle=hline.style_dashed, color=color.green,editable=0)
+//Fill Top and Bottom Area with Color Red and Green
+fill(h36,h35 ,color.green,editable=false)
+fill(h32,h33,color.red,editable=false)
+plot(options == "SPXMBL-NDX"?security("INDEX:NDFD", "1D", close) : na,title = "3RD NDX 5DAYS",color=color.aqua,linewidth=1)
+plot(options == "SPXMBL-NDX"?security("INDEX:NDTW", "1D", close) : na,title = "3RD NDX 20DAYS ",color=color.white,linewidth=2)
+plot(options == "SPXMBL-NDX"?security("INDEX:NDFI", "1D", close) : na,title = "3RD NDX 50DAYS ",color=color.yellow,linewidth=2)
+plot(options == "SPXMBL-NDX"?security("INDEX:NDOH", "1D", close) : na,title = "3RD NDX 100DAYS",color=color.lime,linewidth=3)
+plot(options == "SPXMBL-NDX"?security("INDEX:NDTH", "1D", close) : na,title = "3RD NDX 200DAYS ",color=color.red,linewidth=4)
+// # SPXMBL Market Breadth Draw Line of SPX multi days index
+//Sperate the Inidcator into 4 areas,above 80%,below 20%,50~80%,20~50%;h11 provides a blank area.
+h41 = hline(options == "SPXMBL-SPX"? 110 : na, linestyle=hline.style_dashed, color=color.new(color.white,100),editable=0)
+h42 = hline(options == "SPXMBL-SPX"? 100 : na, linestyle=hline.style_dashed, color=color.lime,editable=0)
+h43  = hline(options == "SPXMBL-SPX"?  80 : na, linestyle=hline.style_dashed, color=color.lime,editable=0)
+h44  = hline(options == "SPXMBL-SPX"?  50 : na, linestyle=hline.style_dashed, color=color.gray,editable=0)
+h45  = hline(options == "SPXMBL-SPX"?  20 : na, linestyle=hline.style_dashed, color=color.green,editable=0)
+h46  = hline(options == "SPXMBL-SPX"?   0 : na, linestyle=hline.style_dashed, color=color.green,editable=0)
+//Fill Top and Bottom Area with Color Red and Green
+fill(h46,h45 ,color.green,editable=false)
+fill(h42,h43,color.red,editable=false)
+plot(options == "SPXMBL-SPX"?security("INDEX:S5FD", "1D", close) : na,title = "4th SPX 5DAYS",color=color.aqua,linewidth=1)
+plot(options == "SPXMBL-SPX"?security("INDEX:S5TW", "1D", close) : na,title = "4th SPX 20DAYS ",color=color.white,linewidth=2)
+plot(options == "SPXMBL-SPX"?security("INDEX:S5FI", "1D", close) : na,title = "4th SPX 50DAYS ",color=color.yellow,linewidth=2)
+plot(options == "SPXMBL-SPX"?security("INDEX:S5OH", "1D", close) : na,title = "4th SPX 100DAYS",color=color.lime,linewidth=3)
+plot(options == "SPXMBL-SPX"?security("INDEX:S5TH", "1D", close) : na,title = "4th SPX 200DAYS ",color=color.red,linewidth=4) 
