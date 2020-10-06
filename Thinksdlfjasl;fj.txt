@@ -1,0 +1,44 @@
+#Inspired by Lei@loneCapital
+#Coded by Xyuan
+#Share in slack groups only, Please.
+input price = close;
+input ss = 20;
+input mm = 60;
+input ll = 120;
+input displace = 0;
+input paintbars = no;
+input showBreakoutSignals = no;
+plot SMAss = Average(price[-displace], ss);
+plot EMAss = ExpAverage(price[-displace], ss);
+plot SMAmm = Average(price[-displace], mm);
+plot EMAmm = ExpAverage(price[-displace], mm);
+plot SMAll = Average(price[-displace], ll);
+plot EMAll = ExpAverage(price[-displace], ll);
+SMAss.SetStyle(Curve.SHORT_DASH);
+SMAss.SetDefaultColor(Color.RED);
+EMAss.SetDefaultColor(Color.RED);
+SMAmm.SetStyle(Curve.SHORT_DASH);
+SMAmm.SetDefaultColor(Color.DARK_GREEN);
+EMAmm.SetDefaultColor(Color.DARK_GREEN);
+SMAll.SetStyle(Curve.SHORT_DASH);
+SMAll.SetDefaultColor(Color.CYAN);
+EMAll.SetDefaultColor(Color.CYAN);
+plot UpSignal = price crosses above EMAss;
+plot DownSignal = price  crosses below EMAss;
+Alert( UpSignal, text = "UP", sound = Sound.Bell, "alert type" = Alert.BAR);
+Alert(DownSignal, text = "DOWN", sound = Sound.Bell, "alert type" = Alert.BAR);
+plot deduction1 = ( !IsNaN(close[-ss + 1]) and IsNaN(close[-ss]));
+plot deduction2 = ( !IsNaN(close[-mm + 1]) and IsNaN(close[-mm]));
+plot deduction3 = ( !IsNaN(close[-ll + 1]) and IsNaN(close[-ll]));
+deduction1.SetPaintingStrategy(PaintingStrategy.BOOLEAN_POINTS);
+deduction2.SetPaintingStrategy(PaintingStrategy.BOOLEAN_WEDGE_UP);
+deduction3.SetPaintingStrategy(PaintingStrategy.BOOLEAN_WEDGE_UP);
+deduction1.SetLineWeight(5);
+deduction2.SetLineWeight(5);
+deduction3.SetLineWeight(5);
+UpSignal.SetHiding(!showBreakoutSignals);
+DownSignal.SetHiding(!showBreakoutSignals);
+AssignPriceColor(
+if paintbars then
+    if price > EMAss and price > price[ss] then Color.DARK_GREEN else if price < EMAss and price < price[ss] then Color.RED else Color.GRAY
+else Color.CURRENT);
