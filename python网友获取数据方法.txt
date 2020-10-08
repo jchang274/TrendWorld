@@ -1,0 +1,183 @@
+发一个从tushare，baostock获得a股数据的python代码吧，之后可视化我用的power bi， 免费版就够了。需要安装几个基本库，talib没办法pip，上百度查下，就能在镜像网站上查到。tushare需要注册，进阶数据付费获得。
+python我自己也不是老手，跟着网上信息一点点学的，所以写的比较冗长，不过有编程基础的都能看懂吧。没有编成基础的，我觉得也能看懂:sweat_smile:
+#coding=utf-8
+import tushare as ts
+import pandas as pd
+import talib
+import time
+import datetime
+from opendatatools import swindeximport baostock as bs
+import pandas as pd# 登陆baostock系统,因为tushare没有000906
+lg = bs.login()
+# 显示登陆返回信息
+print('login respond error_code:'+lg.error_code)
+print('login respond  error_msg:'+lg.error_msg)rs = bs.query_history_k_data_plus("000906.sh",
+    "date,code,open,high,low,close,preclose,volume,amount,pctChg",
+    start_date='2014-01-01', end_date='2020-09-28', frequency="d")
+print('query_history_k_data_plus respond error_code:'+rs.error_code)
+print('query_history_k_data_plus respond  error_msg:'+rs.error_msg)# 打印结果集
+data_list = []
+while (rs.error_code == '0') & rs.next():
+    # 获取一条记录，将记录合并在一起
+    data_list.append(rs.get_row_data())
+result = pd.DataFrame(data_list, columns=rs.fields)
+result.to_csv("C:/quant/index/history_Index_k_data.csv", index=False)# 登出系统
+bs.logout()#分两段写因为baostock出数据慢，手动输入当日数据后也能算MAresult=pd.read_csv("C:/quant/index/history_Index_k_data.csv")# 登出系统ma5=talib.SMA(result.close,timeperiod=5)
+ma10=talib.SMA(result.close,timeperiod=10)
+ma20=talib.SMA(result.close,timeperiod=20)
+ma30=talib.SMA(result.close,timeperiod=30)
+ma60=talib.SMA(result.close,timeperiod=60)
+ma120=talib.SMA(result.close,timeperiod=120)ema5=talib.SMA(result.close,timeperiod=5)
+ema10=talib.SMA(result.close,timeperiod=10)
+ema20=talib.SMA(result.close,timeperiod=20)
+ema30=talib.SMA(result.close,timeperiod=30)
+ema60=talib.SMA(result.close,timeperiod=60)
+ema120=talib.SMA(result.close,timeperiod=120)result['MA5']=ma5
+result['MA10']=ma10
+result['MA20']=ma20
+result['MA30']=ma30
+result['MA60']=ma60
+result['MA120']=ma120
+result['EMA5']=ema5
+result['EMA10']=ema10
+result['EMA20']=ema20
+result['EMA30']=ema30
+result['EMA60']=ema60
+result['EMA120']=ema120# 结果集输出到csv文件
+result.to_csv("C:/quant/index/history_Index_k_data.csv", index=False)
+print(result)# 登出系统
+bs.logout()ts.set_token('你的token')
+pro = ts.pro_api()
+pool = pro.stock_basic()
+pool.head(5)
+writer = pd.ExcelWriter('C:/quant/list/list.xlsx')
+pool.to_excel(writer,'Sheet1')
+writer.save()
+writer.close()#从申银模块获取行业列表
+SWf, msg = swindex.get_index_list()
+S1=SWf.loc[SWf['section_name']=='一级行业']
+#lc.loc[lc["grade"] == "B"].head()#从申银端口通过刚才过滤的一级行业列表获取数据
+allindex = pd.DataFrame() for i in S1.index_code:
+    time.sleep(0.75)
+    X=str(i)
+    df2, msg = swindex.get_index_daily(X,start_date=20200101,end_date=20200929)
+    #df2.to_csv(r'C:/quant/index/2020/SW/'+X+'.csv',index=False,encoding='utf-8-sig')     allindex = allindex.append(df2)
+    allindex = allindex.sort_values(by=['index_code','date'],axis=0,ascending=[True,True])  
+#申银源数据格式不对，转换格式
+allindex['open']=allindex['open'].astype("float")
+allindex['high']=allindex['high'].astype("float")
+allindex['low']=allindex['low'].astype("float")
+allindex['close']=allindex['close'].astype("float")
+allindex['vol']=allindex['vol'].astype("float")
+allindex['amount']=allindex['amount'].astype("float")
+allindex['change_pct']=allindex['change_pct'].astype("float")#计算申银行业指数MA，MACD
+from scipy.stats import rankdata
+df=allindex[allindex['index_code'].notna()]close=df.close.values
+df.date=df.date.valuesdiff, dea, my_macd = talib.MACD(close,
+                                             fastperiod=12,
+                                             slowperiod=26,
+#获取均线的数据，通过timeperiod参数来分别获取 5,10,20 日均线的数据。
+                                             signalperiod=9)
+ma5=talib.SMA(close,timeperiod=5)
+ma10=talib.SMA(close,timeperiod=10)
+ma20=talib.SMA(close,timeperiod=20)
+ma60=talib.SMA(close,timeperiod=60)
+ma120=talib.SMA(close,timeperiod=120)
+ma350=talib.SMA(close,timeperiod=350)EMA5=talib.EMA(close,timeperiod=5)
+EMA10=talib.EMA(close,timeperiod=10)
+EMA20=talib.EMA(close,timeperiod=20)
+EMA60=talib.EMA(close,timeperiod=60)
+EMA120=talib.EMA(close,timeperiod=120)df['diff']=diff
+df['dea']=dea
+df['MACD']=my_macd
+df['ma5']=ma5
+df['ma10']=ma10
+df['ma20']=ma20
+df['ma60']=ma60
+df['ma120']=ma120
+df['ma350']=ma350df['EMA5']=EMA5
+df['EMA10']=EMA10
+df['EMA60']=EMA60
+df['EMA120']=EMA120df['EMA20']=EMA20
+df['MACD-K']=(diff-dea)/dea*100
+df['C/S']=close/EMA5
+df['M/L']=EMA10/EMA20
+df['S/M']=EMA5/EMA10
+df['BIAS-S']=(close-ma20)/ma20
+df['BIAS-M']=(ma20-ma60)/ma60
+df['BIAS-L']=(ma60-ma120)/ma120
+df['Break']=close/EMA20-1
+df.to_csv('C:/quant/index/SWoutput.csv',index=False,encoding='utf-8-sig') #从TUSHARE获取申万一级行业列表及其对应股票
+Sdf1 = pro.index_classify(level='L1', src='SW')
+Sdf1.to_csv('C:/quant/swsindex/L1.csv',index=False,encoding='utf-8-sig')
+#获取申万二级行业列表
+Sdf2 = pro.index_classify(level='L2', src='SW')
+Sdf2.to_csv('C:/quant/swsindex/L2.csv',index=False,encoding='utf-8-sig')#获取申万三级级行业列表
+Sdf3 = pro.index_classify(level='L3', src='SW')
+Sdf3.to_csv('C:/quant/swsindex/L3.csv',index=False,encoding='utf-8-sig')
+#从TUSHARE端口获取成分股
+allindex = pd.DataFrame() for i in Sdf1.index_code:
+    time.sleep(0.7)
+    Tf=pro.index_member(index_code=i)   
+    allindex = allindex.append(Tf)
+allindex.to_csv(r'C:/quant/swsindex/total.csv')     #从tushare下载日数据for i in range(20200925,20200929):
+    time.sleep(0.75)
+    print (i)
+    x=str(i)
+    df = pro.daily(trade_date=x) #个股数据
+    Mdf = pro.moneyflow(trade_date=x) #个股资金流向，出韭菜指数
+    X1=pd.merge(df,Mdf,on='ts_code')    mf = pro.margin(trade_date=x)#融资融券数据
+    GCdf = pro.repo_daily(ts_code='204001.sh',trade_date=x) # 逆回购数据
+    #HSdf = pro.repo_daily(ts_code='000906.sh',trade_date=x) # 逆回购数据    #X2=pd.merge(mf,GCdf,on='trade_date')    #df2 = pro.index_dailybasic(start_date=x,fields='ts_code,trade_date,turnover_rate,pe,pe_ttm')
+    #pe = df2['pe_ttm']
+    writer1 = X1.to_csv('C:/quant/daydate/2020/'+x + '.csv')
+    writer2 = GCdf.to_csv('C:/quant/GCdata/2020/'+x + '.csv')
+    writer3 = mf.to_csv('C:/quant/financing/2020/'+x + '.csv') #要晚一天出，所以不能合并from os import walk
+for root,dirs,files in walk(r'C:/quant/daydate/2020/',topdown=False):
+    num = len(files)
+    alldata = pd.DataFrame()
+for i in range(num):
+    newdata = pd.read_csv(r'C:/quant/daydate/2020/%s'%files[i])
+    alldata = alldata.append(newdata)
+    alldata = alldata.sort_values(by=['ts_code','trade_date_x'],axis=0,ascending=[True,True])from scipy.stats import rankdata
+df=alldata[alldata['ts_code'].notna()]close=df.close
+diff, dea, my_macd = talib.MACD(close,
+                                             fastperiod=12,
+                                             slowperiod=26,
+#获取均线的数据，通过timeperiod参数来分别获取 5,10,20 日均线的数据。
+                                             signalperiod=9)
+ma5=talib.SMA(close,timeperiod=5)
+ma10=talib.SMA(close,timeperiod=10)
+ma20=talib.SMA(close,timeperiod=20)
+ma60=talib.SMA(close,timeperiod=60)
+ma120=talib.SMA(close,timeperiod=120)
+ma350=talib.SMA(close,timeperiod=350)EMA5=talib.EMA(close,timeperiod=5)
+EMA10=talib.EMA(close,timeperiod=10)
+EMA20=talib.EMA(close,timeperiod=20)
+EMA60=talib.EMA(close,timeperiod=60)
+EMA120=talib.EMA(close,timeperiod=120)ATR1=abs(df.high-df.low)
+ATR2=abs(df.pre_close-df.low)
+ATR3=abs(df.pre_close-df.high)df['ATR'] = talib.ATR(df.high.values,df.low.values,df.pre_close.values, timeperiod=20)
+code = df.ts_code
+df['diff']=diff
+df['dea']=dea
+df['MACD']=my_macd
+df['ma5']=ma5
+df['ma10']=ma10
+df['ma20']=ma20
+df['ma60']=ma60
+df['ma120']=ma120
+df['ma350']=ma350df['EMA5']=EMA5
+df['EMA10']=EMA10
+df['EMA60']=EMA60
+df['EMA120']=EMA120df['EMA20']=EMA20
+df['MACD-K']=(diff-dea)/dea
+df['C/S']=close/EMA5
+df['M/L']=EMA10/EMA20
+df['S/M']=EMA5/EMA10
+df['BIAS-S']=(close-ma20)/ma20
+df['BIAS-M']=(ma20-ma60)/ma60
+df['BIAS-L']=(ma60-ma120)/ma120
+df['Break']=close/EMA20-1
+df['MACD-markettrend']=(diff/dea-1)*100#writer = pd.ExcelWriter(r'C:/quant/output/combinedoutput.csv')
+df.to_csv(r'C:/quant/output/2020output.csv')
