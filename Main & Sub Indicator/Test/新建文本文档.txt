@@ -1,0 +1,10 @@
+// Show expected time frame's close price trail
+SwitchPriceTra=input(defval=false,title="Show price trail for MA forecast",type=input.bool)
+plot(SwitchPriceTra?close:na,"Z",color=color.blue,show_last=z+1,linewidth = 3)
+plot(SwitchPriceTra?close:na,"Y",color=color.red,show_last=y+1,linewidth = 3)
+plot(SwitchPriceTra?close:na,"X",color=color.black,show_last=x+1,linewidth = 3)
+//Show 3 Deduction price expected movement in the coming days
+SwitchPriceFor=input(defval=false,title="Show Deduction price forecast in the coming days",type=input.bool)
+plot(SwitchPriceFor?close:na,"Deduction price Z",offset=z,color=color.blue,show_last=z+1,linewidth = 3)
+plot(SwitchPriceFor?close:na,"Deduction price Y",offset=y,color=color.red,show_last=y+1,linewidth = 3)
+plot(SwitchPriceFor?close:na,"Deduction price X",offset=x,color=color.black,show_last=x+1,linewidth = 3)
